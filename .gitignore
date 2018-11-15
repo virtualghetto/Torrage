@@ -1,0 +1,5 @@
+sync/
+t/
+tmp/
+*.swp
+*.torrent

@@ -1,11 +1,12 @@
 #!/bin/bash
 # cron setup
-# @daily /var/data/torrage.com/www/cron/daily.sh
+# @daily /var/www/localhost/htdocs/Torrage/cron/daily.sh
 
-cd /var/data/torrage.com/www/sync/
+cd /var/www/localhost/htdocs/Torrage/sync/
 
 yesterday="$(date -d "yesterday" +%Y%m%d)"
 
-sort $yesterday.txt | uniq | sort > $yesterday.sort;
-rm $yesterday.txt;
-mv $yesterday.sort $yesterday.txt;
+sort -o $yesterday.txt -u $yesterday.txt;
+
+cd /var/www/localhost/htdocs/Torrage/t/
+sort -o trackers.txt -u trackers.txt;

@@ -1,8 +1,8 @@
 #!/bin/bash
 # cron setup
-# @monthly /var/data/torrage.com/www/cron/monthly.sh
+# @monthly /var/www/localhost/htdocs/Torrage/cron/monthly.sh
 
-cd /var/data/torrage.com/www/sync/
+cd /var/www/localhost/htdocs/Torrage/sync/
 
 lastmonth="$(date -d "5 days ago" +%Y%m)"
 

@@ -15,14 +15,11 @@
 	
 		// list of trackers that will always exist in torrent
 		'trackers' => array(
-			'udp://tracker.openbittorrent.com:80/announce',
-			'udp://tracker.publicbt.com:80/announce',
-			'udp://tracker.istole.it:80/announce',
-			'udp://tracker.ccc.de:80/announce',
+			'http://trackeryknvofs3m.onion/announce',
 		),
 		
 		// used for link generation
-		'torrstoredns' => 'torrage.com',
+		'torrstoredns' => 'torrageonionadd1.onion',
 		
 		// sync configuration
 		'sync' => array(
@@ -34,10 +31,7 @@
 		
 			// list of mirror sites
 			'mirrors' => array(
-				array( 'domain' => 'torrage.com', 'active' => true ),
-				array( 'domain' => 'zoink.it', 'active' => true ),
-				array( 'domain' => 'torcache.com', 'active' => true ),
-				array( 'domain' => 'torrage.ws', 'active' => true ),
+				array( 'domain' => 'torrageonionadd1.onion', 'active' => true ),
 			),
 		),
 	);
@@ -58,6 +52,22 @@
 	if( !is_dir( $SETTINGS['savepath'] ) ) @mkdir( $SETTINGS['savepath'], 0755, true );
 	if( !is_dir( $SETTINGS['sync']['path'] ) ) @mkdir( $SETTINGS['sync']['path'], 0755, true );
 	
+	function add_totrackerfile( $trackers )
+	{
+		global $SETTINGS;
+		// only append hashes if folder exists
+		if( is_dir( $SETTINGS['savepath'] ) )
+		{
+			reset( $trackers );
+			if( is_array( $trackers ) && count( $trackers ) > 0 )
+			{
+				foreach( $trackers as $id => $tracker )
+				{
+				file_put_contents( $SETTINGS['savepath'] . "/trackers.txt", "$tracker\n", FILE_APPEND );
+				}
+			}
+		}
+	}
 	// get alot of uploads.
 	function add_tosyncfiles( $info_hash )
 	{
@@ -144,11 +154,14 @@
 			}
 		}
 		
-		if( !$torr->load( file_get_contents( $f ) ) )
+		$fgc = file_get_contents( $f );
+		if( !$torr->load( $fgc ) )
 		{
+			unset( $fgc );
 			@unlink( $f ); // remove the temp file
 			return TORRAGE_FILE_INVALID;
 		}
+		unset( $fgc );
 		@unlink( $f ); // remove the temp file
 		
 		$hashtorr = create_hashtorr( $torr->getHash() );
@@ -158,7 +171,9 @@
 		{
 			$existtorr = new Torrent();
 			
-			if( !$existtorr->load( gzdecode( file_get_contents( $SETTINGS['savepath'] . $hashtorr . '.torrent' ) ) ) )
+			$fcg = file_get_contents( $SETTINGS['savepath'] . $hashtorr . '.torrent' ) ;
+			$gzd = gzdecode( $fcg );
+			if( !$existtorr->load( $gzd ) )
 			{
 				$existtrackers = array();
 			}
@@ -166,21 +181,27 @@
 			{
 				$existtrackers = __flattern_array( $existtorr->getTrackers() );
 			}
+			unset( $gzd );
+			unset( $fcg );
 		}
 		
 		$tr_from = __flattern_array( $torr->getTrackers() );
 		
+		add_totrackerfile( $tr_from );
 		$tr = array();
 		if( !empty( $existtrackers ) && count( $existtrackers ) > 0 )
 		{
 			include_once dirname( __FILE__ ) . '/whitelist.inc.php';
+			$tr = $tr_from;
 		}
 		else
 		{
 			$tr = $tr_from;
 		}
 		
-		$tr = array_merge( $tr, $existtrackers );
+		if( isset( $existtrackers ) ){
+			$tr = array_merge( $tr, $existtrackers );
+		}
 		$trackers = array_unique( $tr );
 		
 		// Do tracker cleaning
@@ -280,6 +301,7 @@
 		return $hashtorr .= substr( $ht, 4 );
 	}
 	
+	if(!function_exists('gzdecode')){
 	function gzdecode( $data )
 	{
 		$g = tempnam( '/tmp', 'php-gz' );
@@ -290,6 +312,7 @@
 		unlink( $g );
 		return $d;
 	}
+	}
 	
 	function print_head()
 	{
@@ -299,11 +322,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<title>Torrage - Torrent Storage Cache</title>
+		<title>Torrent Storage Cache</title>
 		<link rel="stylesheet" href="/style.css" type="text/css" media="screen" />
 	</head>
 	<body>
-		<div id="canvas"><a href="/"><img src="/images/logo.jpg" border="0" alt="Torrage - Torrent Storage Cache" vspace="10" width="" height="" /></a>
+		<div id="canvas">
 		<?php
 	}
 	

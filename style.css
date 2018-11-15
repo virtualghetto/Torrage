@@ -1,11 +1,9 @@
 body
 {
-	background-repeat: repeat-x;
-	background-image: url(images/bg_fade.gif);
-	font-family: "Lucida Grande", Verdana, Arial, sans-serif;
+	font-family: Arial, Helvetica, sans-serif;
 	color: black;
 	background-color: #ffffff;
-	font-size: 1.1em;
+	font-size: 12pt;
 }
 
 form

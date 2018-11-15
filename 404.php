@@ -2,7 +2,7 @@
 	include_once dirname( __FILE__ ) . '/inc/settings.inc.php';
 	
 	$url = $_SERVER['REQUEST_URI'];
-	if( preg_match( '/\/torrent\/([0-9A-F]{2})([0-9A-F]{2})([0-9A-F]{36}).+/i', $url, $match ) !== false )
+	if( preg_match( '/\/torrent\/([0-9A-F]{2})([0-9A-F]{2})([0-9A-F]{36}).+/i', $url, $match ) != 0 )
 	{
 		$hash = strtoupper( $match[1] . $match[2] . $match[3] );
 		$url_hash = strtoupper( $match[1] . '/' . $match[2] . '/' . $match[3] );
@@ -17,9 +17,10 @@
 	
 	print_head();
 ?>
-	<h2>Torrage is a free service for caching torrent files online.</h2>
+	<h2>This is a free service for caching torrent files online.</h2>
 	<p>404 - File not found.</p>
 	<p>The torrent you are looking for can not be found on the system, if you want to, you can <a href="/">add it to the cache</a>.</p>
+	<?php if( isset( $correct_hash ) && isset ( $original_hash ) ) { ?>
 	<p>
 		<b>Note:</b> HEX values A-F must be in uppercase in torrent URL's
 		<br />
@@ -30,6 +31,7 @@
 			<li><b>ERROR:</b> <?=getProto();?><?=$SETTINGS['torrstoredns'];?>/torrent/<b><?=$original_hash;?></b>.torrent</li>
 		</ul>
 	</p>
+	<?php } ?>
 	<br />
 	<br />
 <?php

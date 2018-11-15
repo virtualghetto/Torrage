@@ -4,6 +4,7 @@
 	// to allow for big files
 	set_time_limit( 0 );
 	ini_set( 'upload_max_filesize', 6 * 1048576 );
+	error_reporting( 0 );
 	
 	print_head();
 	
@@ -60,8 +61,10 @@ HTML;
 		else
 		{
 			echo <<< HTML
-		<p>Your torrentfile is now cached and can be downloaded at:<br />
+		<p>Your torrent file is now cached and can be downloaded at:<br />
 		<br /><a href="/torrent/{$error}.torrent">http://{$SETTINGS['torrstoredns']}/torrent/{$error}.torrent</a></p>
+		<p>Torrent file details can be seen at:<br />
+		<br /><a href="/info/{$error}.torrent">http://{$SETTINGS['torrstoredns']}/info/{$error}.torrent</a></p>
 		<p>If you want to upload another file, go <a href="/">back</a> to the main page.</p>
 
 HTML;

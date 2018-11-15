@@ -70,21 +70,31 @@
 		// see also - getFiles()
 		public function getName()
 		{
-			return $this->info->get( 'name' );
+			return $this->torrent->get( 'name' );
+		}
+
+		public function getAnnounce()
+		{
+			return $this->torrent->get( 'announce' );
+		}
+
+		public function getAnnounceList()
+		{
+			return $this->torrent->get( 'announce-list' );
 		}
 
 		// Get piece length
 		// return - int
 		public function getPieceLength()
 		{
-			return $this->info->get( 'piece length' );
+			return $this->torrent->get( 'piece length' );
 		}
 
 		// Get pieces
 		// return - raw binary of peice hashes
 		public function getPieces()
 		{
-			return $this->info->get( 'pieces' );
+			return $this->torrent->get( 'pieces' );
 		}
 
 		// Get public flag
@@ -93,11 +103,25 @@
 		//           1 private
 		public function getPrivate()
 		{
-			if( $this->info->get( 'private' ) )
+			if( $this->torrent->get( 'private' ) )
 			{
-				return $this->info->get( 'private' );
+				return $this->torrent->get( 'private' );
 			}
 			return -1;
+		}
+
+		public function getPrivateStr()
+		{
+			if( $this->torrent->get( 'private' ) )
+			{
+				$p = $this->torrent->get( 'private');
+
+				if ( $p == '0' )
+					return '0 public, explicit';
+				if ( $p == '1' )
+					return '1 private';
+			}
+			return '-1 public, implicit';
 		}
 
 		// Get a list of files
@@ -106,36 +130,37 @@
 		{
 			// Load files
 			$filelist = array();
-			$length = $this->info->get( 'length' );
 
-			if( $length )
-			{
 				$file = new Torrent_File();
-				$file->name = $this->info->get( 'name' );
-				$file->length = $this->info->get( 'length' );
-				array_push( $filelist, $file );
-			}
-			else
-			{
-				if( $this->info->get( 'files' ) )
+				if( !$this->torrent->get( 'files' ) )
 				{
-					$files = $this->info->get( 'files' );
+					$file->name = $this->torrent->get( 'name' );
+					$file->length = $this->torrent->get( 'length' );
+					array_push( $filelist, $file );
+				} else {
+					//$file->name = $this->torrent->get( 'name' ) . '/';
+					//$file->length = 4096;
+					//array_push( $filelist, $file );
+				}
+
+
+				if( $this->torrent->get( 'files' ) )
+				{
+					$files = $this->torrent->get( 'files' );
 					while( list( $key, $value ) = each( $files ) )
 					{
 						$file = new Torrent_File();
-
-						$path = $value->get( 'path' );
+						$path = $value['path'];
 						while( list( $key, $value2 ) = each( $path ) )
 						{
 							$file->name .= '/' . $value2;
 						}
-						$file->name = ltrim( $file->name, '/' );
-						$file->length = $value->get( 'length' );
+						$file->name = $this->torrent->get( 'name' ) . '/' . ltrim( $file->name, '/' );
+						$file->length = $value['length'];
 
 						array_push( $filelist, $file );
 					}
 				}
-			}
 
 			return $filelist;
 		}
@@ -216,7 +241,7 @@
 		public function setFiles( $filelist )
 		{
 			// Load files
-			$length = $this->info->get( 'length' );
+			$length = $this->torrent->get( 'length' );
 
 			if( $length )
 			{
@@ -225,7 +250,7 @@
 			}
 			else
 			{
-				$files = $this->info->get( 'files' );
+				$files = $this->torrent->get( 'files' );
 				if( !empty( $files ) )
 				{
 					for( $i = 0; $i < count( $files ); ++$i )
@@ -312,6 +337,7 @@
 		{
 			return strtoupper( sha1( $this->torrent->encode( $this->info ) ) );
 		}
+
 	}
 
 	// Simple class to encapsulate filename and length
@@ -319,6 +345,9 @@
 	{
 		public $name;
 		public $length;
+		public function __toString() {
+			return $this->name . ' ( ' . $this->length . ' )';
+		}
 	}
 
 	/**
@@ -329,7 +358,7 @@
 	{
 		public $__data;
 
-		function get( $key )
+		public function get( $key )
 		{
 		    return $this->___get( $this->__data, $key );
 		}

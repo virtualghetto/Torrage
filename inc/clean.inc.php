@@ -2,8 +2,8 @@
 
 	$basicsanity = true;
 	$basicsanity_strict = true;
-	$removeiponly = true;
-	$add_udp_url = true;
+	$removeiponly = false;
+	$add_udp_url = false;
 	$rem_comment = true;
 	
 	// Trackers to remove
@@ -11,6 +11,16 @@
 	
 	// Trackers known to support UDP
 	include_once dirname( __FILE__ ) . '/udptrackers.inc.php';
+	reset( $trackers );
+	// set our default trackers
+	if( count( $SETTINGS['trackers'] ) > 0 )
+	{
+		foreach( $SETTINGS['trackers'] as $tracker )
+		{
+			array_push( $trackers, $tracker );
+		}
+	}
+	$trackers = array_reverse( $trackers );
 	
 	/* Decoding loop - Start */
 	reset( $trackers );
@@ -278,15 +288,6 @@
 	$trackers = merge_trackers( $trackers, $tr_add );
 	/* UDP tracker Loop - END */
 	
-	// set our default trackers
-	if( count( $SETTINGS['trackers'] ) > 0 )
-	{
-		foreach( $SETTINGS['trackers'] as $tracker )
-		{
-			array_push( $trackers, $tracker );
-		}
-	}
-	$trackers = array_reverse( $trackers );
 	
 	/* Functions - Start */
 	function merge_trackers( $tr, $tr_add )
