@@ -1,6 +1,6 @@
 <?php
 	include_once dirname( __FILE__ ) . '/inc/settings.inc.php';
-	
+
 	$url = $_SERVER['REQUEST_URI'];
 
 	function __info_flattern_array( $trackers )
@@ -21,7 +21,7 @@
 				}
 			}
 		}
-		
+
 		return $__trackers;
 	}
 
@@ -36,7 +36,7 @@
 		{
 			include_once dirname( __FILE__ ) . '/inc/TEapi.inc.php';
 			$infotorr = new Torrent();
-			
+
 			$fcg = file_get_contents( $SETTINGS['savepath'] . $url_hash. '.torrent' ) ;
 			$gzd = gzdecode( $fcg );
 			if( $infotorr->load( $gzd ) )
@@ -53,13 +53,13 @@
 				$infopiecelength = $infotorr->getPieceLength();
 				$infoprivate = $infotorr->getPrivateStr();
 				$infoarray = $infotorr->info;
-	
 			}
+
 			unset( $gzd );
 			unset( $fcg );
 		}
 	}
-	
+
 	print_head();
 ?>
 	<h2>This is a free service for caching torrent files online.</h2>
